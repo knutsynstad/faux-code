@@ -1,0 +1,145 @@
+/*!
+ * GitHub Light v0.5.0
+ * Copyright (c) 2012 - 2017 GitHub, Inc.
+ * Licensed under MIT (https://github.com/primer/github-syntax-theme-generator/blob/master/LICENSE)
+ */
+
+"pl-c ": {
+  "description": "comment, punctuation.definition.comment, string.comment",
+  "color": "#6a737d"
+},
+"pl-c1": {
+  "description": "constant, entity.name.constant, variable.other.constant, variable.language, support, meta.property-name, support.constant, support.variable, meta.module-reference, markup.raw, meta.diff.header, meta.output",
+  "color": "#005cc5"
+},
+"pl-s pl-v": {
+  "description": "string variable",
+  "color": "#005cc5"
+},
+"pl-e": {
+  "description": "entity",
+  "color": "#6f42c1"
+},
+"pl-en": {
+  "description": "entity.name",
+  "color": "#6f42c1"
+},
+"pl-smi": {
+  "description": "variable.parameter.function, storage.modifier.package, storage.modifier.import, storage.type.java, variable.other",
+  "color": "#24292e"
+},
+"pl-s pl-s1": {
+  "description": "string source",
+  "color": "#24292e"
+},
+"pl-ent": {
+  "description": "entity.name.tag, markup.quote",
+  "color": "#22863a"
+},
+"pl-k": {
+  "description": "keyword, storage, storage.type",
+  "color": "#d73a49"
+}
+
+.pl-s /* string */,
+.pl-pds /* punctuation.definition.string, source.regexp, string.regexp.character-class */,
+.pl-s .pl-pse .pl-s1 /* string punctuation.section.embedded source */,
+.pl-sr /* string.regexp */,
+.pl-sr .pl-cce /* string.regexp constant.character.escape */,
+.pl-sr .pl-sre /* string.regexp source.ruby.embedded */,
+.pl-sr .pl-sra /* string.regexp string.regexp.arbitrary-repitition */ {
+  color: #032f62;
+}
+
+"pl-v": {
+  "description": "variable",
+  "color": "#e36209"
+},
+"pl-smw": {
+  "description": "sublimelinter.mark.warning",
+  "color": "#e36209"
+},
+"pl-bu": {
+  "description": "invalid.broken, invalid.deprecated, invalid.unimplemented, message.error, brackethighlighter.unmatched, sublimelinter.mark.error",
+  "color": "#b31d28"
+},
+"pl-ii": {
+  "description": "invalid.illegal",
+  "color": "#fafbfc",
+  "background-color": "#b31d28"
+},
+"pl-c2": {
+  "description": "carriage-return",
+  "color": "#fafbfc",
+  "background-color": "#d73a49"
+}
+
+.pl-c2::before /* carriage-return */ {
+  content: "^M";
+}
+
+"pl-sr pl-cce": {
+  "description": "string.regexp constant.character.escape",
+  "font-weight": "bold",
+  "color": "#22863a"
+},
+"pl-ml": {
+  "description": "markup.list",
+  "color": "#735c0f"
+}
+
+.pl-mh /* markup.heading */,
+.pl-mh .pl-en /* markup.heading entity.name */,
+.pl-ms /* meta.separator */ {
+  font-weight: bold;
+  color: #005cc5;
+}
+
+"pl-mi": {
+  "description": "markup.italic",
+  "font-style": "italic",
+  "color": "#24292e"
+},
+"pl-mb": {
+  "description": "markup.bold",
+  "font-weight": "bold",
+  "color": "#24292e"
+},
+"pl-md": {
+  "description": "markup.deleted, meta.diff.header.from-file, punctuation.definition.deleted",
+  "color": "#b31d28",
+  "background-color": "#ffeef0"
+},
+"pl-mi1": {
+  "description": "markup.inserted, meta.diff.header.to-file, punctuation.definition.inserted",
+  "color": "#22863a",
+  "background-color": "#f0fff4"
+},
+"pl-mc": {
+  "description": "markup.changed, punctuation.definition.changed",
+  "color": "#e36209",
+  "background-color": "#ffebda"
+}
+
+.pl-mi2 /* markup.ignored, markup.untracked */ {
+  color: #f6f8fa;
+  background-color: #005cc5;
+}
+
+.pl-mdr /* meta.diff.range */ {
+  font-weight: bold;
+  color: #6f42c1;
+}
+
+.pl-ba /* brackethighlighter.tag, brackethighlighter.curly, brackethighlighter.round, brackethighlighter.square, brackethighlighter.angle, brackethighlighter.quote */ {
+  color: #586069;
+}
+
+.pl-sg /* sublimelinter.gutter-mark */ {
+  color: #959da5;
+}
+
+.pl-corl /* constant.other.reference.link, string.other.link */ {
+  text-decoration: underline;
+  color: #032f62;
+}
