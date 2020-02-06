@@ -6,6 +6,16 @@ const theme = require('./theme');
 
 const { JSDOM } = jsdom;
 const gist = 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727';
+
+const options = {
+  spacing: {
+    horizontal: 5,
+    vertical: 10,
+  },
+  size: 5,
+  margin: 10,
+};
+
 const spacing = {
   horizontal: 5,
   vertical: 10,
@@ -26,9 +36,9 @@ const createLine = (text, lineNumber) => {
       // Beginning of new word
       const x1 = x * spacing.horizontal + margin;
 
-      // Let's find the end
-      let x2 = x;
-      for (let end = x2; end < text.length; end += 1) {
+      // Let's find the end of the word
+      let x2;
+      for (let end = x; end < text.length; end += 1) {
         if (text[end] === ' ') {
           x2 = end - 1;
           x = end - 1;
@@ -36,8 +46,9 @@ const createLine = (text, lineNumber) => {
         }
         x2 = end;
       }
-
       x2 = x2 * spacing.horizontal + margin;
+
+      // Draw word
       line += `<line stroke="${theme['pl-s pl-s1'].color}" stroke-linecap="round" stroke-width="${size}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" />\n`;
     }
   }
