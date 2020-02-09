@@ -4,132 +4,148 @@ const jsdom = require('jsdom');
 const theme = require('./theme'); // GitHub Light v0.5.0
 
 const { JSDOM } = jsdom;
-
 const options = {
   URL: 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727',
-  spacing: {
-    horizontal: 5,
-    vertical: 10,
-  },
-  size: 5,
+  fontSize: 5,
+  characterWidth: 5,
+  leading: 10,
+  linecap: 'round', // 'square' or 'round'
   margin: 50,
 };
 
-const getIndicesOf = (searchStr, str) => {
-  const searchStrLen = searchStr.length;
-  if (searchStrLen === 0) return [];
-  const indices = [];
-  let startIndex = 0;
-  let index;
-  while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-    indices.push(index);
-    startIndex = index + searchStrLen;
-  }
-  return indices;
+const getColor = (className) => {
+  if (theme[className]) return theme[className].color;
+  const defaultColor = theme.default.color;
+  return defaultColor;
 };
 
-const getHighlights = (line) => {
-  const spans = line.children;
-  const text = line.textContent;
-  const highlights = new Map();
-  if (spans && spans.length > 0) {
-    for (let i = 0; i < spans.length; i += 1) {
-      const span = spans[i];
-      console.log('span: ', span);
-      let className = span.classList;
-      console.log('classes: ', className);
-      const { color } = theme[className];
-      const highlighted = span.textContent;
-      const indices = getIndicesOf(highlighted, text);
-      indices.forEach((index) => {
-        highlights.set(index, color);
-      });
+const trimText = (textElement) => {
+  const text = textElement.textContent;
+  const offsetWidth = text.length;
+  let innerText = '';
+  let length = 0;
+  let start = Infinity;
+
+  for (let i = 0; i < text.length; i += 1) {
+    if (text[i] !== ' ') {
+      length += 1;
+      start = i < start ? i : start;
     }
   }
-  return highlights;
-};
 
+  if (length > 0) {
+    innerText = text.slice(start, start + length);
+  } else {
+    start = false;
+  }
+
+  return {
+    text,
+    offsetWidth,
+    innerText,
+    length,
+    start,
+  };
+};
 
 const createLine = (line, lineNumber) => {
-  const text = line.textContent;
-
   // Catch blank lines
-  if (text === '\n') return '';
+  if (line.textContent === '\n') return '';
 
   // For non-blank lines, compose row
-  const highlights = getHighlights(line);
-  console.log(highlights);
-  const y = lineNumber * options.spacing.vertical + options.margin;
+  const segments = line.childNodes;
+  let code = '    <g class="line">\n';
+  let index = 0;
 
-  let code = '<g class="code" >\n';
-  for (let x = 0; x < text.length; x += 1) {
-    if (text[x] !== ' ') {
-      // Beginning of new word
-      const x1 = x * options.spacing.horizontal + options.margin;
-      const highlighted = highlights.has(x);
-      const color = highlighted ? highlights.get(x) : '#24292e';
+  segments.forEach((segment) => {
+    let text = '';
+    let color = '#24292e';
+    let begin = index;
+    let length = 0;
+    let nextIndex;
 
-      // Let's find the end of the word
-      let x2;
-      for (let end = x; end < text.length; end += 1) {
-        if (text[end] === ' ') {
-          x2 = end - 1;
-          x = end - 1;
-          break;
-        }
-        x2 = end;
+    if (segment.tagName === 'SPAN') {
+      // Segment is a colored span
+      text = segment.textContent;
+      color = getColor(segment.className);
+      length = text.length;
+      nextIndex = index + text.length;
+    } else {
+      // Segment is text
+      const trimmedText = trimText(segment);
+      if (trimmedText.length > 0) {
+        begin += trimmedText.start;
+        text = trimmedText.innerText;
+        length = trimmedText.length;
       }
-      x2 = x2 * options.spacing.horizontal + options.margin;
-
-      // Draw word
-      code += `<line stroke="${color}" stroke-linecap="round" stroke-width="${options.size}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" />\n`;
+      nextIndex = index + trimmedText.offsetWidth;
     }
-  }
-  code += '</g>\n';
 
+    if (length > 0) {
+      const x1 = begin * options.characterWidth + options.margin;
+      const x2 = x1 + length * options.characterWidth;
+      const y = lineNumber * options.leading + options.margin;
+      code += `      <line stroke="${color}" x1="${x1 + options.fontSize / 2}" y1="${y}" x2="${x2 - options.fontSize / 2}" y2="${y}" />\n`;
+    }
+
+    index = nextIndex;
+  });
+
+  code += '    </g>\n';
   return code;
 };
 
 const createLineNumbers = (lines) => {
   const count = lines.length;
-  const x1 = options.margin - options.spacing.horizontal * 4;
-  let lineNumbers = '<g class="line-numbers" >\n';
+  const x1 = options.margin - options.characterWidth * 4;
+  let lineNumbers = `  <g class="line numbers" stroke="#BABBBC" stroke-linecap="${options.linecap}" stroke-width="${options.fontSize}">\n`;
   for (let i = 1; i <= count; i += 1) {
-    const y = (i - 1) * options.spacing.vertical + options.margin;
+    const y = (i - 1) * options.leading + options.margin;
     const { length } = i.toString();
-    const x2 = x1 - (length - 1) * options.spacing.horizontal;
-    lineNumbers += `<line stroke="#BABBBC" stroke-linecap="round" stroke-width="${options.size}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" />\n`;
+    const x2 = x1 - (length - 1) * options.characterWidth;
+    lineNumbers += `    <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" />\n`;
   }
-  lineNumbers += '</g>\n';
-
+  lineNumbers += '  </g>\n';
   return lineNumbers;
 };
 
+const getWidth = (lines) => {
+  let widest = 0;
+  lines.forEach((line) => {
+    const width = line.textContent.length;
+    if (width > widest) {
+      widest = width;
+    }
+  });
+  return widest;
+};
 
 fetch(options.URL)
   .then((res) => res.text())
   .then((body) => {
     const { document } = (new JSDOM(body)).window;
     const lines = document.querySelectorAll('.blob-code-inner');
-    const canvasHeight = options.spacing.vertical * lines.length + options.margin * 2;
-    const canvasWidth = 1000;
+    const height = options.leading * lines.length + options.margin * 2;
+    const width = options.characterWidth * getWidth(lines) + options.margin * 2;
 
-    // Begin SVG file
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${canvasWidth}" height="${canvasHeight}" viewBox="0 0 ${canvasWidth} ${canvasHeight}">\n`;
+    // Begin SVG shape
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">\n`;
+
+    // Draw background
+    svg += `  <rect x="0" y="0" width="${width}" height="${height}" fill="${getColor('background')}" />`;
 
     // Draw lines of code
+    svg += `  <g class="code" stroke-linecap="${options.linecap}" stroke-width="${options.fontSize}">\n`;
     lines.forEach((line, lineNumber) => {
       const code = createLine(line, lineNumber);
       svg += code;
     });
+    svg += '  </g>';
 
     // Draw line numbers
     const lineNumbers = createLineNumbers(lines);
     svg += lineNumbers;
 
-    // Complete SVG file
     svg += '</svg>';
-
-    // Save SVG file
     fs.writeFileSync('code.svg', svg);
   });

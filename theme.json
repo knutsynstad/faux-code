@@ -1,5 +1,13 @@
 {
-  "pl-c ": {
+  "default": {
+    "description": "fallback color should a lookup fail",
+    "color": "#24292e"
+  },
+  "background": {
+    "description": "background color",
+    "color": "#ffffff"
+  },
+  "pl-c": {
     "description": "comment, punctuation.definition.comment, string.comment",
     "color": "#6a737d"
   },
@@ -59,7 +67,7 @@
     "description": "string.regexp source.ruby.embedded",
     "color": "#032f62"
   },
-  "pl-sr .pl-sra": {
+  "pl-sr pl-sra": {
     "description": "string.regexp string.regexp.arbitrary-repitition",
     "color": "#032f62"
   },
@@ -104,30 +112,30 @@
     "font-weight": "bold",
     "color": "#005cc5"
   },
-  "pl-mi": {
-    "description": "markup.italic",
-    "font-style": "italic",
-    "color": "#24292e"
-  },
   "pl-mb": {
     "description": "markup.bold",
     "font-weight": "bold",
     "color": "#24292e"
+  },
+  "pl-mc": {
+    "description": "markup.changed, punctuation.definition.changed",
+    "color": "#e36209",
+    "background-color": "#ffebda"
   },
   "pl-md": {
     "description": "markup.deleted, meta.diff.header.from-file, punctuation.definition.deleted",
     "color": "#b31d28",
     "background-color": "#ffeef0"
   },
+  "pl-mi": {
+    "description": "markup.italic",
+    "font-style": "italic",
+    "color": "#24292e"
+  },
   "pl-mi1": {
     "description": "markup.inserted, meta.diff.header.to-file, punctuation.definition.inserted",
     "color": "#22863a",
     "background-color": "#f0fff4"
-  },
-  "pl-mc": {
-    "description": "markup.changed, punctuation.definition.changed",
-    "color": "#e36209",
-    "background-color": "#ffebda"
   },
   "pl-mi2": {
     "description": "markup.ignored, markup.untracked",
