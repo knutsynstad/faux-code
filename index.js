@@ -1,7 +1,7 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
 const jsdom = require('jsdom');
-const theme = require('./theme'); // GitHub Light v0.5.0
+const theme = require('./themes/github-light'); // GitHub Light v0.5.0
 
 const { JSDOM } = jsdom;
 const options = {
