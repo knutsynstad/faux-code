@@ -7,9 +7,8 @@ const { JSDOM } = jsdom;
 const options = {
   URL: 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727',
   fontSize: 5,
-  characterWidth: 5,
   leading: 10,
-  linecap: 'round', // 'square' or 'round'
+  lineCap: 'round', // 'square' or 'round'
   margin: 50,
 };
 
@@ -82,8 +81,8 @@ const createLine = (line, lineNumber) => {
     }
 
     if (length > 0) {
-      const x1 = begin * options.characterWidth + options.margin;
-      const x2 = x1 + length * options.characterWidth;
+      const x1 = begin * options.fontSize + options.margin;
+      const x2 = x1 + length * options.fontSize;
       const y = lineNumber * options.leading + options.margin;
       code += `      <line stroke="${color}" x1="${x1 + options.fontSize / 2}" y1="${y}" x2="${x2 - options.fontSize / 2}" y2="${y}" />\n`;
     }
@@ -97,12 +96,12 @@ const createLine = (line, lineNumber) => {
 
 const createLineNumbers = (lines) => {
   const count = lines.length;
-  const x1 = options.margin - options.characterWidth * 4;
-  let lineNumbers = `  <g class="line numbers" stroke="#BABBBC" stroke-linecap="${options.linecap}" stroke-width="${options.fontSize}">\n`;
+  const x1 = options.margin - options.fontSize * 4;
+  let lineNumbers = `  <g class="line numbers" stroke="#BABBBC" stroke-linecap="${options.lineCap}" stroke-width="${options.fontSize}">\n`;
   for (let i = 1; i <= count; i += 1) {
     const y = (i - 1) * options.leading + options.margin;
     const { length } = i.toString();
-    const x2 = x1 - (length - 1) * options.characterWidth;
+    const x2 = x1 - (length - 1) * options.fontSize;
     lineNumbers += `    <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" />\n`;
   }
   lineNumbers += '  </g>\n';
@@ -123,19 +122,25 @@ const getWidth = (lines) => {
 fetch(options.URL)
   .then((res) => res.text())
   .then((body) => {
+    const {
+      leading,
+      margin,
+      lineCap,
+      fontSize,
+    } = options;
     const { document } = (new JSDOM(body)).window;
     const lines = document.querySelectorAll('.blob-code-inner');
-    const height = options.leading * lines.length + options.margin * 2;
-    const width = options.characterWidth * getWidth(lines) + options.margin * 2;
+    const height = leading * lines.length + margin * 2 - leading;
+    const width = fontSize * getWidth(lines) + margin * 2;
 
     // Begin SVG shape
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">\n`;
 
     // Draw background
-    svg += `  <rect x="0" y="0" width="${width}" height="${height}" fill="${getColor('background')}" />`;
+    svg += `  <rect x="0" y="0" width="${width}" height="${height}" fill="${getColor('background')}" />\n`;
 
     // Draw lines of code
-    svg += `  <g class="code" stroke-linecap="${options.linecap}" stroke-width="${options.fontSize}">\n`;
+    svg += `  <g class="code" stroke-linecap="${lineCap}" stroke-width="${fontSize}">\n`;
     lines.forEach((line, lineNumber) => {
       const code = createLine(line, lineNumber);
       svg += code;

@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="380" height="720" viewBox="0 0 380 720">
-  <rect x="0" y="0" width="380" height="720" fill="#ffffff" />  <g class="code" stroke-linecap="round" stroke-width="5">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="380" height="710" viewBox="0 0 380 710">
+  <rect x="0" y="0" width="380" height="710" fill="#ffffff" />
+  <g class="code" stroke-linecap="round" stroke-width="5">
     <g class="line">
       <line stroke="#d73a49" x1="52.5" y1="50" x2="77.5" y2="50" />
       <line stroke="#24292e" x1="87.5" y1="50" x2="87.5" y2="50" />
