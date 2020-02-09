@@ -3,7 +3,6 @@ const fetch = require('node-fetch');
 const jsdom = require('jsdom');
 const theme = require('./themes/github-light'); // GitHub Light v0.5.0
 
-const { JSDOM } = jsdom;
 const options = {
   URL: 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727',
   fontSize: 5,
@@ -84,7 +83,8 @@ const createLine = (line, lineNumber) => {
       const x1 = begin * options.fontSize + options.margin;
       const x2 = x1 + length * options.fontSize;
       const y = lineNumber * options.leading + options.margin;
-      code += `      <line stroke="${color}" x1="${x1 + options.fontSize / 2}" y1="${y}" x2="${x2 - options.fontSize / 2}" y2="${y}" />\n`;
+      const offset = options.fontSize / 2;
+      code += `      <line stroke="${color}" x1="${x1 + offset}" y1="${y}" x2="${x2 - offset}" y2="${y}" />\n`;
     }
 
     index = nextIndex;
@@ -128,6 +128,7 @@ fetch(options.URL)
       lineCap,
       fontSize,
     } = options;
+    const { JSDOM } = jsdom;
     const { document } = (new JSDOM(body)).window;
     const lines = document.querySelectorAll('.blob-code-inner');
     const height = leading * lines.length + margin * 2 - leading;
