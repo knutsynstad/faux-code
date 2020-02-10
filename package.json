@@ -1,7 +1,7 @@
 {
   "name": "faux-code",
   "version": "0.1.0",
-  "description": "",
+  "description": "Convert real code from a Github Gist into an SVG image of faux code.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
