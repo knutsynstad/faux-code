@@ -17,35 +17,6 @@ const getColor = (className) => {
   return defaultColor;
 };
 
-const trimText = (textElement) => {
-  const text = textElement.textContent;
-  const offsetWidth = text.length;
-  let innerText = '';
-  let length = 0;
-  let start = Infinity;
-
-  for (let i = 0; i < text.length; i += 1) {
-    if (text[i] !== ' ') {
-      length += 1;
-      start = i < start ? i : start;
-    }
-  }
-
-  if (length > 0) {
-    innerText = text.slice(start, start + length);
-  } else {
-    start = false;
-  }
-
-  return {
-    text,
-    offsetWidth,
-    innerText,
-    length,
-    start,
-  };
-};
-
 const split = (text, offset = 0) => {
   const output = [];
   let segment;
@@ -82,45 +53,25 @@ const drawLineSegment = (begin, length, lineNumber, color) => {
 
 
 const createLine = (line, lineNumber) => {
-  // Catch blank lines
   if (line.textContent === '\n') return '';
 
-  // For non-blank lines, compose row
-  const segments = line.childNodes;
+  const children = line.childNodes;
   let code = '    <g class="line">\n';
   let index = 0;
 
-  segments.forEach((segment) => {
-    let color = '#24292e';
-    let begin = index;
-    let length = 0;
-    let text;
-    let nextIndex;
-
-    if (segment.tagName === 'SPAN') {
-      // Segment is a colored span
-      color = getColor(segment.className);
-      text = segment.textContent;
-      const textSegments = split(text, index);
-      textSegments.forEach((textSegment) => {
-        code += drawLineSegment(textSegment.start, textSegment.length, lineNumber, color);
-      });
-
-      length = text.length;
-      nextIndex = index + text.length;
-    } else {
-      // Segment is text
-      const trimmedText = trimText(segment);
-      if (trimmedText.length > 0) {
-        begin += trimmedText.start;
-        text = trimmedText.innerText;
-        length = trimmedText.length;
-        code += drawLineSegment(begin, length, lineNumber, color);
-      }
-      nextIndex = index + trimmedText.offsetWidth;
-    }
-
-    index = nextIndex;
+  children.forEach((child) => {
+    const isSpan = child.tagName === 'SPAN';
+    const color = isSpan ? getColor(child.className) : theme.default.color;
+    const text = child.textContent;
+    split(text, index).forEach((textSegment) => {
+      code += drawLineSegment(
+        textSegment.start,
+        textSegment.length,
+        lineNumber,
+        color,
+      );
+    });
+    index += text.length;
   });
 
   code += '    </g>\n';
