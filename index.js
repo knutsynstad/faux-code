@@ -3,18 +3,16 @@ const fetch = require('node-fetch');
 const jsdom = require('jsdom');
 const theme = require('./themes/github-light'); // GitHub Light v0.5.0
 
-const options = {
-  URL: 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727',
-  fontSize: 5,
-  leading: 10,
-  lineCap: 'round', // 'square' or 'round'
-  margin: 50,
-};
+// Options
+const URL = 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727';
+const fontSize = 5;
+const leading = 10;
+const lineCap = 'round'; // 'square' or 'round'
+const margin = 50;
 
 const getColor = (className) => {
   if (theme[className]) return theme[className].color;
-  const defaultColor = theme.default.color;
-  return defaultColor;
+  return theme.default.color;
 };
 
 const split = (text, offset = 0) => {
@@ -41,18 +39,17 @@ const split = (text, offset = 0) => {
 const drawLineSegment = (begin, length, lineNumber, color) => {
   let line = '';
   if (length > 0) {
-    const x1 = begin * options.fontSize + options.margin;
-    const x2 = x1 + length * options.fontSize;
-    const y = lineNumber * options.leading + options.margin;
-    const offset = options.fontSize / 2;
-    line += `      <line stroke="${color}" x1="${x1 + offset}" y1="${y}" x2="${x2 - offset}" y2="${y}" />\n`;
+    const x1 = begin * fontSize + margin;
+    const x2 = x1 + length * fontSize;
+    const y = lineNumber * leading + margin;
+    const offset = fontSize / 2;
+    line += `      <line x1="${x1 + offset}" y1="${y}" x2="${x2 - offset}" y2="${y}" stroke="${color}" />\n`;
   }
-
   return line;
 };
 
 
-const createLine = (line, lineNumber) => {
+const composeLine = (line, lineNumber) => {
   if (line.textContent === '\n') return '';
 
   const children = line.childNodes;
@@ -80,19 +77,19 @@ const createLine = (line, lineNumber) => {
 
 const createLineNumbers = (lines) => {
   const count = lines.length;
-  const x1 = options.margin - options.fontSize * 4;
-  let lineNumbers = `  <g class="line numbers" stroke="#BABBBC" stroke-linecap="${options.lineCap}" stroke-width="${options.fontSize}">\n`;
+  const x1 = margin - fontSize * 4;
+  let lineNumbers = `  <g class="line numbers" stroke="#BABBBC" stroke-linecap="${lineCap}" stroke-width="${fontSize}">\n`;
   for (let i = 1; i <= count; i += 1) {
-    const y = (i - 1) * options.leading + options.margin;
+    const y = (i - 1) * leading + margin;
     const { length } = i.toString();
-    const x2 = x1 - (length - 1) * options.fontSize;
+    const x2 = x1 - (length - 1) * fontSize;
     lineNumbers += `    <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" />\n`;
   }
   lineNumbers += '  </g>\n';
   return lineNumbers;
 };
 
-const getWidth = (lines) => {
+const widestLine = (lines) => {
   let widest = 0;
   lines.forEach((line) => {
     const width = line.textContent.length;
@@ -103,20 +100,14 @@ const getWidth = (lines) => {
   return widest;
 };
 
-fetch(options.URL)
+fetch(URL)
   .then((res) => res.text())
   .then((body) => {
-    const {
-      leading,
-      margin,
-      lineCap,
-      fontSize,
-    } = options;
     const { JSDOM } = jsdom;
     const { document } = (new JSDOM(body)).window;
     const lines = document.querySelectorAll('.blob-code-inner');
     const height = leading * lines.length + margin * 2 - leading;
-    const width = fontSize * getWidth(lines) + margin * 2;
+    const width = fontSize * widestLine(lines) + margin * 2;
 
     // Begin SVG shape
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">\n`;
@@ -127,14 +118,12 @@ fetch(options.URL)
     // Draw lines of code
     svg += `  <g class="code" stroke-linecap="${lineCap}" stroke-width="${fontSize}">\n`;
     lines.forEach((line, lineNumber) => {
-      const code = createLine(line, lineNumber);
-      svg += code;
+      svg += composeLine(line, lineNumber);
     });
     svg += '  </g>';
 
     // Draw line numbers
-    const lineNumbers = createLineNumbers(lines);
-    svg += lineNumbers;
+    svg += createLineNumbers(lines);
 
     svg += '</svg>';
     fs.writeFileSync('code.svg', svg);
