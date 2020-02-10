@@ -15,19 +15,19 @@ const getColor = (className) => {
   return theme.default.color;
 };
 
-const split = (text, offset = 0) => {
+const split = (text) => {
   const output = [];
   let segment;
   for (let index = 0; index <= text.length; index += 1) {
     if (!segment && text[index] !== ' ') {
       segment = {
-        start: offset + index,
+        start: index,
       };
     }
     if (segment && !segment.end
       && (text[index] === ' ' || index === text.length)) {
-      segment.end = offset + index;
-      segment.text = text.slice(segment.start - offset, segment.end - offset);
+      segment.end = index;
+      segment.text = text.slice(segment.start, segment.end);
       segment.length = segment.text.length;
       output.push(segment);
       segment = undefined;
@@ -60,9 +60,9 @@ const composeLine = (line, lineNumber) => {
     const isSpan = child.tagName === 'SPAN';
     const color = isSpan ? getColor(child.className) : theme.default.color;
     const text = child.textContent;
-    split(text, index).forEach((textSegment) => {
+    split(text).forEach((textSegment) => {
       code += drawLineSegment(
-        textSegment.start,
+        textSegment.start + index,
         textSegment.length,
         lineNumber,
         color,
