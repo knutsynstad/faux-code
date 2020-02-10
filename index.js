@@ -46,6 +46,41 @@ const trimText = (textElement) => {
   };
 };
 
+const split = (text, offset = 0) => {
+  const output = [];
+  let segment;
+  for (let index = 0; index <= text.length; index += 1) {
+    if (!segment && text[index] !== ' ') {
+      segment = {
+        start: offset + index,
+      };
+    }
+    if (segment && !segment.end
+      && (text[index] === ' ' || index === text.length)) {
+      segment.end = offset + index;
+      segment.text = text.slice(segment.start - offset, segment.end - offset);
+      segment.length = segment.text.length;
+      output.push(segment);
+      segment = undefined;
+    }
+  }
+  return output;
+};
+
+const drawLineSegment = (begin, length, lineNumber, color) => {
+  let line = '';
+  if (length > 0) {
+    const x1 = begin * options.fontSize + options.margin;
+    const x2 = x1 + length * options.fontSize;
+    const y = lineNumber * options.leading + options.margin;
+    const offset = options.fontSize / 2;
+    line += `      <line stroke="${color}" x1="${x1 + offset}" y1="${y}" x2="${x2 - offset}" y2="${y}" />\n`;
+  }
+
+  return line;
+};
+
+
 const createLine = (line, lineNumber) => {
   // Catch blank lines
   if (line.textContent === '\n') return '';
@@ -56,16 +91,21 @@ const createLine = (line, lineNumber) => {
   let index = 0;
 
   segments.forEach((segment) => {
-    let text = '';
     let color = '#24292e';
     let begin = index;
     let length = 0;
+    let text;
     let nextIndex;
 
     if (segment.tagName === 'SPAN') {
       // Segment is a colored span
-      text = segment.textContent;
       color = getColor(segment.className);
+      text = segment.textContent;
+      const textSegments = split(text, index);
+      textSegments.forEach((textSegment) => {
+        code += drawLineSegment(textSegment.start, textSegment.length, lineNumber, color);
+      });
+
       length = text.length;
       nextIndex = index + text.length;
     } else {
@@ -75,16 +115,9 @@ const createLine = (line, lineNumber) => {
         begin += trimmedText.start;
         text = trimmedText.innerText;
         length = trimmedText.length;
+        code += drawLineSegment(begin, length, lineNumber, color);
       }
       nextIndex = index + trimmedText.offsetWidth;
-    }
-
-    if (length > 0) {
-      const x1 = begin * options.fontSize + options.margin;
-      const x2 = x1 + length * options.fontSize;
-      const y = lineNumber * options.leading + options.margin;
-      const offset = options.fontSize / 2;
-      code += `      <line stroke="${color}" x1="${x1 + offset}" y1="${y}" x2="${x2 - offset}" y2="${y}" />\n`;
     }
 
     index = nextIndex;
