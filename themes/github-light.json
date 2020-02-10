@@ -7,6 +7,10 @@
     "description": "background color",
     "color": "#ffffff"
   },
+  "line-number": {
+    "description": "line number",
+    "color": "#BABBBC"
+  },
   "pl-c": {
     "description": "comment, punctuation.definition.comment, string.comment",
     "color": "#6a737d"
