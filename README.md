@@ -1,7 +1,7 @@
 # faux-code
 Convert real code from a Github Gist into an SVG image of faux code.
 
-![Example output](https://repository-images.githubusercontent.com/238382657/45f20580-4b74-11ea-8aa0-2a618c9ed120)
+![Example output](https://repository-images.githubusercontent.com/238382657/6409ab00-5037-11ea-9ebe-1e30ed0f7438)
 
 ## Index.js
 Input:
