@@ -1,7 +1,33 @@
 # faux-code
-Convert real code from a Github Gist into an SVG image of faux code
+Convert real code from a Github Gist into an SVG image of faux code.
 
 ![Example output](https://repository-images.githubusercontent.com/238382657/45f20580-4b74-11ea-8aa0-2a618c9ed120)
+
+## Index.js
+Input:
+```js
+// GitHub Gist URL
+const gist = 'https://gist.github.com/knutsynstad/265226120c71426420c78c750a4eb727';
+```
+
+Output:
+```js
+// SVG file
+const filename = './fauxcode.svg';
+```
+
+Options:
+```js
+const options = {
+  theme: 'light', // 'light' or 'dark' mode
+  fontSize: 5, // Line thickness and width
+  leading: 10, // Space between lines
+  lineCap: 'round', // Line ends 'square' or 'round'
+  margin: 50, // Space between canvas edges and code block
+  lineNumbers: true, // Whether or not to include line numbers
+  lineNumberOffset: -3, // Line number offset from margin
+};
+```
 
 ## Get up and running
 
@@ -17,6 +43,7 @@ npm install
 
 Run script:
 ```
-node index.js
+npm run start
 ```
-Output is saved to `code.svg`
+
+
